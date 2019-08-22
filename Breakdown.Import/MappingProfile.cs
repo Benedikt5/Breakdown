@@ -9,7 +9,7 @@ namespace Breakdown.Import
 {
     public class MappingProfile: Profile
     {
-        public MappingProfile()
+        public MappingProfile()//
         {
             CreateMap<TransactionModel, Transaction>()
                 .ForMember(t=>t.Id , m=> m.Ignore())

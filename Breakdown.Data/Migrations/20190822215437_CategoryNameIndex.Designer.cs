@@ -3,14 +3,16 @@ using System;
 using Breakdown.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Breakdown.Data.Migrations
 {
     [DbContext(typeof(BreakdownContext))]
-    partial class BreakdownContextModelSnapshot : ModelSnapshot
+    [Migration("20190822215437_CategoryNameIndex")]
+    partial class CategoryNameIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

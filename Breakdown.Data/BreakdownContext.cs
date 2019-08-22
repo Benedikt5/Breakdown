@@ -12,12 +12,16 @@ namespace Breakdown.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(@"breakdown.db");
+            optionsBuilder.UseSqlite(@"Data Source=Path_to_breakdown.db");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Transaction>()
                 .HasIndex(t => new { t.UserId, t.OuterId })
+                .IsUnique();
+
+            modelBuilder.Entity<Category>()
+                .HasIndex(c => c.Name)
                 .IsUnique();
         }
     }

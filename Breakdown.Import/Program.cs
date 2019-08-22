@@ -15,7 +15,7 @@ namespace Breakdown.Import
     {
         static async Task Main()
         {
-            var financePath = @"<Import path>";
+            var financePath = @"";
             using (var scope = GetProvider().CreateScope())
             {
                 var logger = scope.ServiceProvider.GetService<ILogger<Program>>();
@@ -58,6 +58,7 @@ namespace Breakdown.Import
             });
             services.AddTransient<ITransactionsReader, FileReader>();
             services.AddTransient<Importer>();
+            services.AddTransient<CategoryService>();
             services.AddAutoMapper(typeof(Program));
             return services.BuildServiceProvider();
         }

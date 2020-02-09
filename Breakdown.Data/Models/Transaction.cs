@@ -19,5 +19,12 @@ namespace Breakdown.Data.Models
         public Category Category { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
+
+        public void DecreaseAmount(decimal amt)
+        {
+            Amount -= amt;
+            if (Amount < 0)
+                Amount = 0;
+        }
     }
 }

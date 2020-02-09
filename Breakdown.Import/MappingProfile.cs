@@ -14,7 +14,7 @@ namespace Breakdown.Import
             CreateMap<TransactionModel, Transaction>()
                 .ForMember(t=>t.Id , m=> m.Ignore())
                 .ForMember(t=>t.User, m=> m.Ignore())
-                .ForMember(t=>t.Category, m=> m.Ignore())
+                .ForMember(t=>t.Category, m => m.MapFrom(c => new Category { Name = c.Category }))
                 .ForMember(t=>t.CategoryId, m=> m.Ignore())
                 .ForMember(t => t.OuterId, m => m.MapFrom(q => q.Id))
                 .ForMember(t => t.Date, m => m.MapFrom(q => q.Created));

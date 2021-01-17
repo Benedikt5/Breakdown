@@ -1,24 +1,16 @@
-﻿using AutoMapper;
-using Breakdown.Data.Models;
-using Breakdown.Import.Models;
+﻿using Breakdown.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ImportTransaction = Breakdown.Import.Models.TransactionModel;
 
 namespace Breakdown.Import.Helpers
 {
     public class TransactionConverter
     {
-        private readonly IMapper _mapper;
-
-        public TransactionConverter(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
+        private static readonly Regex _subCategoryRegex = new Regex(@"#(\w+)", RegexOptions.Compiled);
+        private static readonly Regex _otherCategoryRegex = new Regex(@"{{(\w+)(\/\w+)?}} ([0-9]*\.?[0-9]+)", RegexOptions.Compiled);
 
         /// <summary>
         /// Extracts included transactions from other categories and lowers amount of main transactions
@@ -28,54 +20,71 @@ namespace Breakdown.Import.Helpers
         /// <remarks>
         /// The pattern to look for is: *{{parent/category}} price* where the parent part is optional
         /// </remarks>
-
-        public List<Transaction> Map(ImportTransaction input)
+        public static List<Transaction> Map(ImportTransaction input)
         {
-            var result = new List<Transaction>();
-            var transaction = _mapper.Map<ImportTransaction, Transaction>(input);
-            result.Add(transaction);
+            return GetCategoryAmounts(input)
+                .Select((x, i) =>
+                {
+                    if (i == 0)
+                        return CreateTransaction(input, x.category, x.amount, StripNotes(input.Notes), "");
+                    return CreateTransaction(input, x.category, x.amount, "", $"-{i}");
+                }).ToList();
+        }
 
-            var transactions = new List<Transaction>();
-            if (String.IsNullOrEmpty(input.Notes))
-                return result;
+        private static List<(Category category, decimal amount)> GetCategoryAmounts(ImportTransaction tran)
+        {
+            var noteLines = tran.Notes?.Split('\n') ?? Array.Empty<string>();
+            var subCatLine = noteLines.FirstOrDefault(s => _subCategoryRegex.IsMatch(s)); // the one starting with #
 
-            var noteLines = input.Notes.Split('\n');
-            
-            // Get real category Name - it's a subcategory
-            var subCat = noteLines.FirstOrDefault(s => s.StartsWith("#"));
-            if (!string.IsNullOrEmpty(subCat))
-                transaction.Category.Name = subCat.TrimStart('#');
+            var category = subCatLine is { }
+                ? CreateCategory(_subCategoryRegex.Match(subCatLine).Groups[1].Value, tran.Category)
+                : CreateCategory(tran.Category, null);
 
-            // Get extra transactions from other categories
-            var pattern = @"{{(\w+)(\/\w+)?}} ([0-9]*\.?[0-9]+)";
-            result.AddRange(noteLines.Where(s => Regex.IsMatch(s, pattern)).Select((s, i) =>
+            var extras = noteLines.Where(s => _otherCategoryRegex.IsMatch(s)).Select(s => // the ones in curly braces: {{ blah }}
             {
-                var match = Regex.Match(s, pattern);
-                string parent = null;
-                string category;
+                var match = _otherCategoryRegex.Match(s);
                 decimal.TryParse(match.Groups[3].Value, out var amount);
 
-                if (!string.IsNullOrEmpty(match.Groups[2].Value))
-                {
-                    parent = match.Groups[1].Value;
-                    category = match.Groups[2].Value;
-                }
-                else
-                    category = match.Groups[1].Value;
-
+                var extra = !string.IsNullOrEmpty(match.Groups[2].Value)
+                    ? CreateCategory(match.Groups[2].Value, match.Groups[1].Value)
+                    : CreateCategory(match.Groups[1].Value, null);
                 
-                var extra = _mapper.Map<ImportTransaction, Transaction>(input);
+                return (extra, amount);
+            }).ToList();
 
-                extra.OuterId += $"-{i + 1}";
-                extra.Amount = amount;
-                extra.Category.Name = category;
-
-                transaction.DecreaseAmount(amount);
-                return extra;
-            }));
+            var result = new List<(Category, decimal)> { (category, Math.Max(0, tran.Amount - extras.Sum(a => a.amount))) };
+            result.AddRange(extras);
 
             return result;
-
         }
+
+        private static Category CreateCategory(string name, string parentName)
+            => new Category
+            {
+                Name = !string.IsNullOrEmpty(name) ? name : "n/a",
+                Parent = !string.IsNullOrEmpty(parentName) ? new Category
+                {
+                    Name = parentName
+                } : null
+            };
+        
+        private static Transaction CreateTransaction(ImportTransaction tran, Category category, decimal amount, string notes, string suffix)
+            => new Transaction
+            {
+                Address = tran.Address,
+                Amount = amount,
+                Category = category,
+                Date = tran.Date,
+                Description = tran.Description,
+                Notes = notes,
+                OuterId = $"{tran.Id}{suffix}",
+            };
+
+        private static string StripNotes(string notes)
+            => !string.IsNullOrEmpty(notes)
+            ? string.Join("\n", notes.Split('\n')
+                .Where(x => !_subCategoryRegex.IsMatch(x))
+                .Where(x => !_otherCategoryRegex.IsMatch(x)))
+            : string.Empty;
     }
 }

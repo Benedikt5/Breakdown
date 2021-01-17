@@ -13,16 +13,14 @@ namespace Breakdown.Import.Reader
             //todo: invent smth sane 
             var commaDelimeter = File.ReadLines(path).First().Contains(',');
 
-            using (var reader = new StreamReader(path))
-            using (var csv = new CsvReader(reader))
-            {
-                csv.Configuration.Delimiter = commaDelimeter ? "," : "\t";
-                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.ToLower();
+            using var reader = new StreamReader(path);
+            using var csv = new CsvReader(reader);
+            csv.Configuration.Delimiter = commaDelimeter ? "," : "\t";
+            csv.Configuration.PrepareHeaderForMatch = (header, index) => header.ToLower();
 
-                var records = csv.GetRecords<TransactionModel>();
-                foreach (var record in records)
-                    yield return record;
-            }
+            var records = csv.GetRecords<TransactionModel>();
+            foreach (var record in records)
+                yield return record;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Breakdown.Data;
 using Breakdown.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,35 +12,45 @@ namespace Breakdown.Import
     public class CategoryService
     {
         private readonly BreakdownContext _ctx;
+        private readonly ILogger<CategoryService> _logger;
         private readonly Dictionary<string, Category> _cache; // single thread only
-        public CategoryService(BreakdownContext ctx)
+        public CategoryService(BreakdownContext ctx, ILogger<CategoryService> logger)
         {
             _cache = new Dictionary<string, Category>(StringComparer.OrdinalIgnoreCase);
             _ctx = ctx;
+            _logger = logger;
         }
         //todo: category tree?
-        public async Task<Category> AddCategoryAsync(string name, string parentName)
+        public async Task<Category> GetOrCreateCategoryAsync(string name, string parentName)
         {
-            var cat = new Category { Name = name };
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
 
+            var cat = await Get(name);
+            if (cat is { })
+                return cat;
+
+            cat = new Category { Name = name };
             if (!string.IsNullOrEmpty(parentName))
             {
                 var parent = await Get(parentName);
-                if (parent == null)
+                if (parent is null)
                 {
                     parent = new Category { Name = parentName };
                     _cache[parentName] = parent;
+                    _logger.LogDebug("Creating parent category \"{parentName}\" for \"{categoryName}\"", parentName, name);
                 }
                 cat.Parent = parent;
             }
 
+
+            _logger.LogDebug("Creating category \"{categoryName}\"", name);
             _ctx.Add(cat);
             await _ctx.SaveChangesAsync();
 
             _cache[name] = cat;
             return cat;
         }
-
 
         /// <summary>
         /// Search category based on StartsWith() occurence of category and its parent
@@ -60,7 +71,7 @@ namespace Breakdown.Import
             if (_cache.TryGetValue(name, out var cached))
                 return cached;
 
-            var cat = await _ctx.Categories.FirstOrDefaultAsync(c => c.Name.Equals(name));
+            var cat = await _ctx.Categories.SingleOrDefaultAsync(c => c.Name.StartsWith(name));
             if (cat != null)
                 _cache[cat.Name] = cat;
             return cat;

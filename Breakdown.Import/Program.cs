@@ -53,7 +53,6 @@ namespace Breakdown.Import
 
         private static IServiceProvider GetProvider(IConfiguration config)
         {
-            
             var cstring = config.GetConnectionString("Breakdown");
             var services = new ServiceCollection();
             services.AddDbContext<BreakdownContext>(c => c.UseSqlite(cstring));

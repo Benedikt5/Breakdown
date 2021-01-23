@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Breakdown", "Breakdown\Breakdown.csproj", "{AD663A33-54CC-436C-9C8F-9A10D6D4106C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Breakdown.Import", "Breakdown.Import\Breakdown.Import.csproj", "{0241247B-59A7-4B95-97F5-D0E6B39E598D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Breakdown.Data", "Breakdown.Data\Breakdown.Data.csproj", "{675249B0-0C14-4183-880D-FC9B0C3FFE60}"
@@ -19,9 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AD663A33-54CC-436C-9C8F-9A10D6D4106C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD663A33-54CC-436C-9C8F-9A10D6D4106C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD663A33-54CC-436C-9C8F-9A10D6D4106C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0241247B-59A7-4B95-97F5-D0E6B39E598D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0241247B-59A7-4B95-97F5-D0E6B39E598D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0241247B-59A7-4B95-97F5-D0E6B39E598D}.Release|Any CPU.ActiveCfg = Release|Any CPU

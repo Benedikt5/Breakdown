@@ -1,5 +1,6 @@
 ﻿using Breakdown.Import.Models;
 using CsvHelper;
+using CsvHelper.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,12 @@ namespace Breakdown.Import.Reader
             var commaDelimeter = File.ReadLines(path).First().Contains(',');
 
             using var reader = new StreamReader(path);
-            using var csv = new CsvReader(reader);
-            csv.Configuration.Delimiter = commaDelimeter ? "," : "\t";
-            csv.Configuration.PrepareHeaderForMatch = (header, index) => header.ToLower();
+            var config = new CsvConfiguration(System.Globalization.CultureInfo.CurrentCulture)
+            {
+                Delimiter = commaDelimeter ? "," : "\t",
+                PrepareHeaderForMatch = (header, index) => header.ToLower(),
+            };
+            using var csv = new CsvReader(reader, config);
 
             var records = csv.GetRecords<TransactionModel>();
             foreach (var record in records)

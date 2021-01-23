@@ -60,9 +60,9 @@ namespace Breakdown.Import
         /// <returns></returns>
         public async Task<List<Category>> Search(string name, string parent)
         {
-            var query = _ctx.Categories.Where(c => c.Name.StartsWith(name));
+            var query = _ctx.Categories.Where(c => c.Name.ToUpper().StartsWith(name.ToUpper()));
             if (!string.IsNullOrEmpty(parent))
-                query = query.Where(c => c.Parent != null && c.Parent.Name.StartsWith(parent));
+                query = query.Where(c => c.Parent != null && c.Parent.Name.ToUpper().StartsWith(parent.ToUpper()));
             return await query.ToListAsync();
         }
 
@@ -71,9 +71,9 @@ namespace Breakdown.Import
             if (_cache.TryGetValue(name, out var cached))
                 return cached;
 
-            var cat = await _ctx.Categories.SingleOrDefaultAsync(c => c.Name.StartsWith(name));
+            var cat = await _ctx.Categories.SingleOrDefaultAsync(c => c.Name.ToUpper().StartsWith(name.ToUpper()));
             if (cat != null)
-                _cache[cat.Name] = cat;
+                _cache[name] = cat;
             return cat;
         }
     }

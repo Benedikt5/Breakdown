@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{76C49617
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Breakdown.Import.Tests", "Breakdown.Import.Tests\Breakdown.Import.Tests.csproj", "{6A575680-AEF5-493D-AA28-B2E881C7B940}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakdown.API", "Breakdown.API\Breakdown.API.csproj", "{9109F85E-7DE6-4890-AB87-4A7F82D626A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{6A575680-AEF5-493D-AA28-B2E881C7B940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A575680-AEF5-493D-AA28-B2E881C7B940}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A575680-AEF5-493D-AA28-B2E881C7B940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9109F85E-7DE6-4890-AB87-4A7F82D626A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9109F85E-7DE6-4890-AB87-4A7F82D626A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9109F85E-7DE6-4890-AB87-4A7F82D626A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9109F85E-7DE6-4890-AB87-4A7F82D626A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

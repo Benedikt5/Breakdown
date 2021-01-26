@@ -48,11 +48,14 @@ namespace Breakdown.Import.Helpers
                 var extra = !string.IsNullOrEmpty(match.Groups[2].Value)
                     ? CreateCategory(match.Groups[2].Value, match.Groups[1].Value)
                     : CreateCategory(match.Groups[1].Value, null);
-                
+
+                amount *= -1;
                 return (extra, amount);
             }).ToList();
 
-            var result = new List<(Category, decimal)> { (category, Math.Max(0, tran.Amount - extras.Sum(a => a.amount))) };
+            var isExpence = tran.Amount <= 0;
+            var categoryTotal = isExpence ? tran.Amount -+ extras.Sum(a => a.amount) : tran.Amount;
+            var result = new List<(Category, decimal)> { (category, isExpence ? Math.Min(0, categoryTotal) : categoryTotal) };
             result.AddRange(extras);
 
             return result;

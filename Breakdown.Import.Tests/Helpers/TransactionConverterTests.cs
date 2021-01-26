@@ -45,7 +45,8 @@ namespace Breakdown.Import.Tests.Helpers
         {
             var cat = "Category";
             var subCat = "SubCat";
-            var trans = new TransactionModel() { Category = cat, Notes = $"#{subCat}" };
+            var amount = -10;
+            var trans = new TransactionModel() { Category = cat, Notes = $"#{subCat}", Amount = amount };
 
 
             var result = TransactionConverter.Map(trans);
@@ -59,7 +60,9 @@ namespace Breakdown.Import.Tests.Helpers
         {
             var cat = "Category";
             var otherCat = "OtherCategory";
-            var trans = new TransactionModel() { Category = cat, Notes = "{{" + otherCat + "}}" + " " + 123};
+            var total = -100;
+            var otherExpence = 10;
+            var trans = new TransactionModel() { Category = cat, Notes = "{{" + otherCat + "}}" + " " + otherExpence, Amount = total};
 
             var result = TransactionConverter.Map(trans);
 
@@ -80,7 +83,7 @@ namespace Breakdown.Import.Tests.Helpers
         {
             var cat = "Category";
             var otherCat = "OtherCategory";
-            var totalAmount = 10m;
+            var totalAmount = -10m;
             var otherAmount = 3m;
             var trans = new TransactionModel() { Category = cat, Amount = totalAmount, Notes = "{{" + otherCat + "}}" + " " + otherAmount };
 
@@ -90,14 +93,26 @@ namespace Breakdown.Import.Tests.Helpers
                 el1 =>
                 {
                     Assert.Equal(cat, el1.Category.Name);
-                    Assert.Equal(totalAmount - otherAmount, el1.Amount);
+                    Assert.Equal(totalAmount + otherAmount, el1.Amount);
                 },
                 el2 =>
                 {
                     Assert.Equal(otherCat, el2.Category.Name);
-                    Assert.Equal(otherAmount, el2.Amount);
+                    Assert.Equal(-otherAmount, el2.Amount);
                 }
             );
+        }        
+        
+        [Fact]
+        public void GivenOtherIncome_WhenMap_ThenValidAmountSign()
+        {
+            var cat = "Category";
+            var totalAmount = -10m;
+            var trans = new TransactionModel() { Category = cat, Amount = totalAmount};
+
+            var result = TransactionConverter.Map(trans);
+            Assert.Single(result);
+            Assert.Equal(totalAmount, result.First().Amount);
         }
 
         [Fact]
@@ -106,7 +121,7 @@ namespace Breakdown.Import.Tests.Helpers
             var cat = "Category";
             var id = "vrWEF3ewsf3";
             var otherCat = "OtherCategory";
-            var totalAmount = 10m;
+            var totalAmount = -10m;
             var otherAmount = 3m;
             var trans = new TransactionModel() { Id = id, Category = cat, Amount = totalAmount, Notes = "{{" + otherCat + "}}" + " " + otherAmount };
 

@@ -28,6 +28,10 @@ namespace Breakdown.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Breakdown.API", Version = "v1" });
             });
+
+            var origins = Configuration.GetSection("AllowOrigins").Get<string[]>();
+            if (origins is { })
+                services.AddCors(o => o.AddPolicy("_policey", b => b.WithOrigins(origins)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,7 +47,7 @@ namespace Breakdown.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("_policey");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

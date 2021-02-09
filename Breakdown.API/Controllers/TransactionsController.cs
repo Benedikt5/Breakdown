@@ -21,7 +21,7 @@ namespace Breakdown.API.Controllers
         public IActionResult Filter(DateTime? after, DateTime? before, int? pageNumber, int pageSize = 30, string orderBy = "date_desc")
         {
 
-            var trans = _ctx.Transactions.AsQueryable();
+            var trans = _ctx.Transactions.Where(x => x.Amount < 0);
             if (after is { })
                 trans = trans.Where(x => x.Date >= after);
             if (before is { })

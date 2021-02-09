@@ -8,8 +8,7 @@ namespace Breakdown.Import.Models
         [Name("Transaction ID")]
         public string Id { get; set; }
         public DateTime Date { get; set; }
-        public DateTime Time { get; set; }
-
+        public TimeSpan Time { get; set; }
         public decimal Amount { get; set; }
         public string Currency { get; set; }
         [Name("Local amount")]
@@ -22,7 +21,6 @@ namespace Breakdown.Import.Models
         [Name("Notes and #tags")]
         public string Notes { get; set; }
 
-        public DateTime Created =>
-            new DateTime(Date.Year, Date.Month, Date.Day, Time.Hour, Time.Minute, Time.Second);
+        public DateTime Created => Date.Add(Time);
     }
 }

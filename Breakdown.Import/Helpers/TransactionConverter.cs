@@ -77,7 +77,7 @@ namespace Breakdown.Import.Helpers
                 Address = tran.Address,
                 Amount = amount,
                 Category = category,
-                Date = tran.Date,
+                Date = tran.Created,
                 Description = tran.Description,
                 Notes = notes,
                 OuterId = $"{tran.Id}{suffix}",
